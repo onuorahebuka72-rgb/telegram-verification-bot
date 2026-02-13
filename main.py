@@ -12,20 +12,19 @@ from telegram.ext import (
 
 logging.basicConfig(level=logging.INFO)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
+BOT_TOKEN = os.getenv(8105303098:AAEGwr0Bz5deRoawUVljsR6JE8kD1jEcFfM)
 ADMIN_ID = 7725003444
 CHANNEL_ID = -1003847918456
 
 if not BOT_TOKEN:
-    print("ERROR: BOT_TOKEN not set!")
-    exit()
+    raise RuntimeError("BOT_TOKEN not set in Railway variables")
 
 async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.chat_join_request.from_user
     try:
         await context.bot.send_message(
             chat_id=user.id,
-            text="Send voice/video for verification."
+            text="👋 Send a voice or video for verification."
         )
     except Exception as e:
         logging.error(e)
@@ -45,10 +44,10 @@ async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.forward(chat_id=ADMIN_ID)
         await context.bot.send_message(
             chat_id=ADMIN_ID,
-            text=f"Verification from {user.first_name}",
+            text=f"Verification from {user.first_name} ({user.id})",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-        await update.message.reply_text("Under review.")
+        await update.message.reply_text("⏳ Under review.")
     except Exception as e:
         logging.error(e)
 
@@ -65,16 +64,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 chat_id=CHANNEL_ID,
                 user_id=user_id
             )
-            await context.bot.send_message(user_id, "Approved.")
-            await query.edit_message_text("Approved")
+            await context.bot.send_message(user_id, "✅ Approved.")
+            await query.edit_message_text("Approved.")
 
         elif action == "reject":
             await context.bot.decline_chat_join_request(
                 chat_id=CHANNEL_ID,
                 user_id=user_id
             )
-            await context.bot.send_message(user_id, "Rejected.")
-            await query.edit_message_text("Rejected")
+            await context.bot.send_message(user_id, "❌ Rejected.")
+            await query.edit_message_text("Rejected.")
     except Exception as e:
         logging.error(e)
 
@@ -84,5 +83,5 @@ app.add_handler(ChatJoinRequestHandler(join_request))
 app.add_handler(MessageHandler(filters.VOICE | filters.VIDEO, handle_media))
 app.add_handler(CallbackQueryHandler(button))
 
-print("Bot running...")
-app.run_polling()    main()app.run_polling()
+print("Bot is running...")
+app.run_polling()app.run_polling()    main()app.run_polling()
